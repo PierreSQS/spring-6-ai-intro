@@ -1,6 +1,6 @@
 # Introduction to Spring AI
 
-This repository contains source code examples used to support my on-line courses about the Spring Framework.
+This repository contains source code examples used to support the JT-Course [Sect41-Chap373](https://www.udemy.com/course/spring-framework-6-beginner-to-guru/learn/lecture/43282924#overview).
 
 ## All Spring Framework Guru Courses
 ### Spring Framework 6
