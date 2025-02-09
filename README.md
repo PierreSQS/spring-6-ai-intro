@@ -2,6 +2,10 @@
 
 This repository contains source code examples used to support my on-line courses about the Spring Framework.
 
+This repository refers to the [JT's Spring AI course](https://www.udemy.com/course/spring-ai-beginner-to-guru/)
+
+However some chapters are also linked to the following course: [Spring Framework 6 - Beginner to Guru](https://www.udemy.com/course/spring-framework-6-beginner-to-guru/?referralCode=2BD0B7B7B6B511D699A9)
+
 ## All Spring Framework Guru Courses
 ### Spring Framework 6
 * [Spring Framework 6 - Beginner to Guru](https://www.udemy.com/course/spring-framework-6-beginner-to-guru/?referralCode=2BD0B7B7B6B511D699A9)
