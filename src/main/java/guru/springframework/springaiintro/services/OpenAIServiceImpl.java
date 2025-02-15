@@ -1,6 +1,7 @@
 package guru.springframework.springaiintro.services;
 
 import guru.springframework.springaiintro.model.Answer;
+import guru.springframework.springaiintro.model.GetCapitalRequest;
 import guru.springframework.springaiintro.model.Question;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.Objects;
 
 /**
- * Modified by Pierrot on 12.02.2025.
+ * Modified by Pierrot on 15.02.2025.
  */
 @Service
 public class OpenAIServiceImpl implements OpenAIService {
@@ -20,6 +21,16 @@ public class OpenAIServiceImpl implements OpenAIService {
 
     public OpenAIServiceImpl(ChatClient.Builder chatClientBuilder) {
         this.chatClient = chatClientBuilder.build();
+    }
+
+    @Override
+    public Answer getCapital(GetCapitalRequest getCapitalRequest) {
+        PromptTemplate promptTemplate =
+                new PromptTemplate("What's the capital of "+getCapitalRequest.stateOrCountry()+"?");
+        Prompt prompt = promptTemplate.create();
+        ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
+
+        return new Answer(Objects.requireNonNull(response).getResult().getOutput().getContent());
     }
 
     @Override
