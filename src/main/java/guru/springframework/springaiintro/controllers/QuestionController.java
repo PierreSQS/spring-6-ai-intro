@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Created by jt, Spring Framework Guru.
+ * Modified by Pierrot on 15.02.2025.
  */
 @RestController
 public class QuestionController {
@@ -20,12 +20,7 @@ public class QuestionController {
         this.openAIService = openAIService;
     }
 
-    @PostMapping("/capitalWithInfo")
-    public Answer getCapitalWithInfo(@RequestBody GetCapitalRequest getCapitalRequest) {
-        return this.openAIService.getCapitalWithInfo(getCapitalRequest);
-    }
-
-    @PostMapping("/capital")
+    @PostMapping("/getCapital")
     public Answer getCapital(@RequestBody GetCapitalRequest getCapitalRequest) {
         return this.openAIService.getCapital(getCapitalRequest);
     }

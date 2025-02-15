@@ -12,12 +12,15 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
- * Created by jt, Spring Framework Guru.
+ * Modified by Pierrot on 15.02.2025.
  */
 @Service
 public class OpenAIServiceImpl implements OpenAIService {
+
+    Logger logger = Logger.getLogger(getClass().getName());
 
     private final ChatModel chatModel;
 
@@ -27,18 +30,6 @@ public class OpenAIServiceImpl implements OpenAIService {
 
     @Value("classpath:templates/get-capital-prompt.st")
     private Resource getCapitalPrompt;
-
-    @Value("classpath:templates/get-capital-with-info.st")
-    private Resource getCapitalPromptWithInfo;
-
-    @Override
-    public Answer getCapitalWithInfo(GetCapitalRequest getCapitalRequest) {
-        PromptTemplate promptTemplate = new PromptTemplate(getCapitalPromptWithInfo);
-        Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry()));
-        ChatResponse response = chatModel.call(prompt);
-
-        return new Answer(response.getResult().getOutput().getContent());
-    }
 
     @Override
     public Answer getCapital(GetCapitalRequest getCapitalRequest) {
@@ -51,7 +42,7 @@ public class OpenAIServiceImpl implements OpenAIService {
 
     @Override
     public Answer getAnswer(Question question) {
-        System.out.println("I was called");
+        logger.info("I was called");
 
         PromptTemplate promptTemplate = new PromptTemplate(question.question());
         Prompt prompt = promptTemplate.create();

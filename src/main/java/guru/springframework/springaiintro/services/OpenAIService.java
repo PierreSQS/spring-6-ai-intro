@@ -5,11 +5,10 @@ import guru.springframework.springaiintro.model.GetCapitalRequest;
 import guru.springframework.springaiintro.model.Question;
 
 /**
- * Created by jt, Spring Framework Guru.
+ * Modified by Pierrot on 15.02.2025.
  */
 public interface OpenAIService {
 
-    Answer getCapitalWithInfo(GetCapitalRequest getCapitalRequest);
     Answer getCapital(GetCapitalRequest getCapitalRequest);
     String getAnswer(String question);
 
