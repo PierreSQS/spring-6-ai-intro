@@ -7,8 +7,11 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -19,15 +22,17 @@ public class OpenAIServiceImpl implements OpenAIService {
 
     private final ChatClient chatClient;
 
+    @Value("classpath:templates/get-capital-prompt.st")
+    private Resource getCapitalPromptResource;
+
     public OpenAIServiceImpl(ChatClient.Builder chatClientBuilder) {
         this.chatClient = chatClientBuilder.build();
     }
 
     @Override
     public Answer getCapital(GetCapitalRequest getCapitalRequest) {
-        PromptTemplate promptTemplate =
-                new PromptTemplate("What's the capital of "+getCapitalRequest.stateOrCountry()+"?");
-        Prompt prompt = promptTemplate.create();
+        PromptTemplate promptTemplate = new PromptTemplate(getCapitalPromptResource);
+        Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry()));
         ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
 
         return new Answer(Objects.requireNonNull(response).getResult().getOutput().getContent());
