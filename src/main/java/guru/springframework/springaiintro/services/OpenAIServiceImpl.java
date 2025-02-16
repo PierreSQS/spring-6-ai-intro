@@ -1,5 +1,8 @@
 package guru.springframework.springaiintro.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.springframework.springaiintro.model.Answer;
 import guru.springframework.springaiintro.model.GetCapitalRequest;
 import guru.springframework.springaiintro.model.Question;
@@ -24,8 +27,11 @@ public class OpenAIServiceImpl implements OpenAIService {
 
     private final ChatModel chatModel;
 
-    public OpenAIServiceImpl(ChatModel chatModel) {
+    private final ObjectMapper objectMapper;
+
+    public OpenAIServiceImpl(ChatModel chatModel, ObjectMapper objectMapper) {
         this.chatModel = chatModel;
+        this.objectMapper = objectMapper;
     }
 
     @Value("classpath:templates/get-capital-prompt.st")
@@ -49,7 +55,20 @@ public class OpenAIServiceImpl implements OpenAIService {
         Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry()));
         ChatResponse response = chatModel.call(prompt);
 
-        return new Answer(response.getResult().getOutput().getContent());
+        String content = response.getResult().getOutput().getContent();
+        logger.info(content);
+
+        String responString;
+
+        try {
+            JsonNode jsonNode = objectMapper.readTree(content);
+            responString = jsonNode.get("answer").asText();
+
+        } catch (JsonProcessingException jsonException) {
+            throw new RuntimeException("Error parsing response", jsonException);
+        }
+
+        return new Answer(responString);
     }
 
     @Override
