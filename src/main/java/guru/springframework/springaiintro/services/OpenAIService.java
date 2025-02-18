@@ -11,7 +11,10 @@ import guru.springframework.springaiintro.model.Question;
 public interface OpenAIService {
 
     Answer getCapitalWithInfo(GetCapitalRequest getCapitalRequest);
+
+    // New in Sec3_Chap24
     GetCapitalResponse getCapital(GetCapitalRequest getCapitalRequest);
+
     String getAnswer(String question);
 
     Answer getAnswer(Question question);
