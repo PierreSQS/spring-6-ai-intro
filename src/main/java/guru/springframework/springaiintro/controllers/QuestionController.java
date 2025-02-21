@@ -20,6 +20,11 @@ public class QuestionController {
         this.openAIService = openAIService;
     }
 
+    @PostMapping("/getCapitalWithInfo")
+    public Answer getCapitalWithInfo(@RequestBody GetCapitalRequest getCapitalRequest) {
+        return this.openAIService.getCapitalWithInfo(getCapitalRequest);
+    }
+
     @PostMapping("/getCapital")
     public Answer getCapital(@RequestBody GetCapitalRequest getCapitalRequest) {
         return openAIService.getCapital(getCapitalRequest);

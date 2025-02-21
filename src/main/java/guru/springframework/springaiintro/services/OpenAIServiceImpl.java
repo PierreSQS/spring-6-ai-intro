@@ -1,9 +1,10 @@
 package guru.springframework.springaiintro.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.springframework.springaiintro.model.Answer;
 import guru.springframework.springaiintro.model.GetCapitalRequest;
 import guru.springframework.springaiintro.model.Question;
-import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -15,25 +16,39 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Modified by Pierrot on 15.02.2025.
+ * Modified by Pierrot on 21.02.2025.
  */
 @Service
 public class OpenAIServiceImpl implements OpenAIService {
 
-    private final ChatClient chatClient;
+    private final ChatModel chatModel;
 
     @Value("classpath:templates/get-capital-prompt.st")
     private Resource getCapitalPromptResource;
 
-    public OpenAIServiceImpl(ChatClient.Builder chatClientBuilder) {
-        this.chatClient = chatClientBuilder.build();
+    @Value("classpath:templates/get-capital-with-info.st")
+    private Resource getCapitalWithInfoPromptResource;
+
+
+    public OpenAIServiceImpl(ChatModel chatModel, ObjectMapper objectMapper) {
+        this.chatModel = chatModel;
+    }
+
+
+    @Override
+    public Answer getCapitalWithInfo(GetCapitalRequest getCapitalRequest) {
+        PromptTemplate promptTemplate = new PromptTemplate(getCapitalWithInfoPromptResource);
+        Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry()));
+        ChatResponse response = chatModel.call(prompt);
+
+        return new Answer(Objects.requireNonNull(response).getResult().getOutput().getContent());
     }
 
     @Override
     public Answer getCapital(GetCapitalRequest getCapitalRequest) {
         PromptTemplate promptTemplate = new PromptTemplate(getCapitalPromptResource);
         Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry()));
-        ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
+        ChatResponse response = chatModel.call(prompt);
 
         return new Answer(Objects.requireNonNull(response).getResult().getOutput().getContent());
     }
@@ -42,7 +57,7 @@ public class OpenAIServiceImpl implements OpenAIService {
     public Answer getAnswer(Question question) {
         PromptTemplate promptTemplate = new PromptTemplate(question.question());
         Prompt prompt = promptTemplate.create();
-        ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
+        ChatResponse response = chatModel.call(prompt);
 
         return new Answer(Objects.requireNonNull(response).getResult().getOutput().getContent());
     }
@@ -51,7 +66,7 @@ public class OpenAIServiceImpl implements OpenAIService {
     public String getAnswer(String question) {
         PromptTemplate promptTemplate = new PromptTemplate(question);
         Prompt prompt = promptTemplate.create();
-        ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
+        ChatResponse response = chatModel.call(prompt);
 
         assert response != null;
         return response.getResult().getOutput().getContent();
