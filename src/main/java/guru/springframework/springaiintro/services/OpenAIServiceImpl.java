@@ -64,7 +64,7 @@ public class OpenAIServiceImpl implements OpenAIService {
 
         try {
             JsonNode jsonNode = objectMapper.readTree(response.getResult().getOutput().getContent());
-            responseString = jsonNode.get("answer").get(0).get("text").asText();
+            responseString = jsonNode.get("answer").asText();
             logger.info("### the responseString: {} ###",responseString);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
