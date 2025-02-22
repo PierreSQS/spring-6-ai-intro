@@ -3,6 +3,7 @@ package guru.springframework.springaiintro.services;
 import guru.springframework.springaiintro.model.Answer;
 import guru.springframework.springaiintro.model.GetCapitalRequest;
 import guru.springframework.springaiintro.model.GetCapitalResponse;
+import guru.springframework.springaiintro.model.GetCapitalWithInfoResponse;
 import guru.springframework.springaiintro.model.Question;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,12 +39,19 @@ public class OpenAIServiceImpl implements OpenAIService {
     private Resource getCapitalPromptWithInfo;
 
     @Override
-    public Answer getCapitalWithInfo(GetCapitalRequest getCapitalRequest) {
+    public GetCapitalWithInfoResponse getCapitalWithInfo(GetCapitalRequest getCapitalRequest) {
+        BeanOutputConverter<GetCapitalWithInfoResponse> converter = new BeanOutputConverter<>(GetCapitalWithInfoResponse.class);
+        String responseFormat = converter.getFormat();
+        displayResponseFormat(responseFormat);
+
         PromptTemplate promptTemplate = new PromptTemplate(getCapitalPromptWithInfo);
-        Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry()));
+        Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry(),
+                "responseFormat", responseFormat));
         ChatResponse response = chatModel.call(prompt);
 
-        return new Answer(response.getResult().getOutput().getText());
+        logger.info(response.getResult().getOutput().getText());
+
+        return converter.convert(response.getResult().getOutput().getText());
     }
 
     @Override
@@ -52,7 +60,7 @@ public class OpenAIServiceImpl implements OpenAIService {
                 new BeanOutputConverter<>(GetCapitalResponse.class);
 
         String respFormat = converter.getFormat();
-        logger.info("Response format: {}", respFormat);
+        displayResponseFormat(respFormat);
 
         PromptTemplate promptTemplate = new PromptTemplate(getCapitalPrompt);
         Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry(),
@@ -84,4 +92,9 @@ public class OpenAIServiceImpl implements OpenAIService {
 
         return response.getResult().getOutput().getText();
     }
+
+    private static void displayResponseFormat(String respFormat) {
+        logger.info("Response format: {}", respFormat);
+    }
+
 }

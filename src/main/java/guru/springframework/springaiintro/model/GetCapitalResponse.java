@@ -2,5 +2,5 @@ package guru.springframework.springaiintro.model;
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
 
-public record GetCapitalResponse(@JsonPropertyDescription("This is the name of Capital") String answer) {
+public record GetCapitalResponse(@JsonPropertyDescription("This is the Capital name") String answer) {
 }
