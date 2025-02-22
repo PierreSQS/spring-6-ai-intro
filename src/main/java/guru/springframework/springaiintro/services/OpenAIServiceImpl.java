@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 /**
- * Created by jt, Spring Framework Guru.
+ * Modified by Pierrot on 22-02-2025.
  */
 @Service
 public class OpenAIServiceImpl implements OpenAIService {
@@ -44,7 +44,7 @@ public class OpenAIServiceImpl implements OpenAIService {
         Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry()));
         ChatResponse response = chatModel.call(prompt);
 
-        return new Answer(response.getResult().getOutput().getContent());
+        return new Answer(response.getResult().getOutput().getText());
     }
 
     @Override
@@ -53,10 +53,10 @@ public class OpenAIServiceImpl implements OpenAIService {
         Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry()));
         ChatResponse response = chatModel.call(prompt);
 
-        System.out.println(response.getResult().getOutput().getContent());
+        System.out.println(response.getResult().getOutput().getText());
         String responseString;
         try {
-            JsonNode jsonNode = objectMapper.readTree(response.getResult().getOutput().getContent());
+            JsonNode jsonNode = objectMapper.readTree(response.getResult().getOutput().getText());
             responseString = jsonNode.get("answer").asText();
 
         } catch (JsonProcessingException e) {
@@ -73,7 +73,7 @@ public class OpenAIServiceImpl implements OpenAIService {
         Prompt prompt = promptTemplate.create();
         ChatResponse response = chatModel.call(prompt);
 
-        return new Answer(response.getResult().getOutput().getContent());
+        return new Answer(response.getResult().getOutput().getText());
     }
 
     @Override
@@ -82,6 +82,6 @@ public class OpenAIServiceImpl implements OpenAIService {
         Prompt prompt = promptTemplate.create();
         ChatResponse response = chatModel.call(prompt);
 
-        return response.getResult().getOutput().getContent();
+        return response.getResult().getOutput().getText();
     }
 }
