@@ -44,7 +44,7 @@ public class OpenAIServiceImpl implements OpenAIService {
         Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry()));
         ChatResponse response = chatModel.call(prompt);
 
-        return new Answer(response.getResult().getOutput().getContent());
+        return new Answer(response.getResult().getOutput().getText());
     }
 
     @Override
@@ -64,7 +64,6 @@ public class OpenAIServiceImpl implements OpenAIService {
         }
         return new Answer(responseString);
     }
-
     @Override
     public Answer getAnswer(Question question) {
         System.out.println("I was called");
@@ -73,7 +72,7 @@ public class OpenAIServiceImpl implements OpenAIService {
         Prompt prompt = promptTemplate.create();
         ChatResponse response = chatModel.call(prompt);
 
-        return new Answer(response.getResult().getOutput().getContent());
+        return new Answer(response.getResult().getOutput().getText());
     }
 
     @Override
@@ -82,6 +81,6 @@ public class OpenAIServiceImpl implements OpenAIService {
         Prompt prompt = promptTemplate.create();
         ChatResponse response = chatModel.call(prompt);
 
-        return response.getResult().getOutput().getContent();
+        return response.getResult().getOutput().getText();
     }
 }
