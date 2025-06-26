@@ -13,6 +13,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Created by jt, Spring Framework Guru.
@@ -59,7 +60,7 @@ public class OpenAIServiceImpl implements OpenAIService {
 
         ChatResponse response = chatModel.call(prompt);
 
-        return converter.convert(response.getResult().getOutput().getContent());
+        return converter.convert(Objects.requireNonNull(response.getResult().getOutput().getText()));
     }
 
     @Override
@@ -70,7 +71,7 @@ public class OpenAIServiceImpl implements OpenAIService {
         Prompt prompt = promptTemplate.create();
         ChatResponse response = chatModel.call(prompt);
 
-        return new Answer(response.getResult().getOutput().getContent());
+        return new Answer(response.getResult().getOutput().getText());
     }
 
     @Override
@@ -79,6 +80,6 @@ public class OpenAIServiceImpl implements OpenAIService {
         Prompt prompt = promptTemplate.create();
         ChatResponse response = chatModel.call(prompt);
 
-        return response.getResult().getOutput().getContent();
+        return response.getResult().getOutput().getText();
     }
 }
