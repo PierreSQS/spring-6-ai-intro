@@ -41,12 +41,12 @@ public class OpenAIServiceImpl implements OpenAIService {
         BeanOutputConverter<GetCapitalWithInfoResponse> converter = new BeanOutputConverter<>(GetCapitalWithInfoResponse.class);
         String format = converter.getFormat();
 
-        PromptTemplate promptTemplate = new PromptTemplate(getCapitalPrompt);
+        PromptTemplate promptTemplate = new PromptTemplate(getCapitalPromptWithInfo);
         Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry(),
                 "format", format));
         ChatResponse response = chatModel.call(prompt);
 
-        return converter.convert(response.getResult().getOutput().getContent());
+        return converter.convert(Objects.requireNonNull(response.getResult().getOutput().getText()));
     }
 
     @Override
