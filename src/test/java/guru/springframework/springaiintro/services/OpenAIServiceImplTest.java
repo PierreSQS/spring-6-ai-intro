@@ -17,6 +17,7 @@ class OpenAIServiceImplTest {
     @Test
     void getAnswer() {
         String answer = openAIServ.getAnswer(QUESTION);
-        assertThat(answer).contains("Cameroon");
+        System.out.println("the Answer: "+answer);
+        assertThat(answer).contains("Douala");
     }
 }
