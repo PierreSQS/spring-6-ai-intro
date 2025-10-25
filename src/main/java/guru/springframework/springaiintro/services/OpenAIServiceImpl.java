@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.springframework.springaiintro.model.Answer;
 import guru.springframework.springaiintro.model.GetCapitalRequest;
 import guru.springframework.springaiintro.model.Question;
-import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -25,12 +25,12 @@ public class OpenAIServiceImpl implements OpenAIService {
 
     Logger logger = Logger.getLogger(getClass().getName());
 
-    private final ChatModel chatModel;
+    private final ChatClient chatClient;
 
     private final ObjectMapper objectMapper;
 
-    public OpenAIServiceImpl(ChatModel chatModel, ObjectMapper objectMapper) {
-        this.chatModel = chatModel;
+    public OpenAIServiceImpl(ChatClient.Builder chatClientBuilder, ObjectMapper objectMapper) {
+        this.chatClient = chatClientBuilder.build();
         this.objectMapper = objectMapper;
     }
 
@@ -45,7 +45,9 @@ public class OpenAIServiceImpl implements OpenAIService {
     public Answer getCapitalWithInfo(GetCapitalRequest getCapitalRequest) {
         PromptTemplate promptTemplate = new PromptTemplate(getCapitalWithInfoPrompt);
         Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry()));
-        ChatResponse response = chatModel.call(prompt);
+        ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
+
+        assert response != null;
         return new Answer(response.getResult().getOutput().getText());
     }
 
@@ -53,8 +55,9 @@ public class OpenAIServiceImpl implements OpenAIService {
     public Answer getCapital(GetCapitalRequest getCapitalRequest) {
         PromptTemplate promptTemplate = new PromptTemplate(getCapitalPrompt);
         Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry()));
-        ChatResponse response = chatModel.call(prompt);
+        ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
 
+        assert response != null;
         String content = response.getResult().getOutput().getText();
         logger.info(content);
 
@@ -77,8 +80,9 @@ public class OpenAIServiceImpl implements OpenAIService {
 
         PromptTemplate promptTemplate = new PromptTemplate(question.question());
         Prompt prompt = promptTemplate.create();
-        ChatResponse response = chatModel.call(prompt);
+        ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
 
+        assert response != null;
         return new Answer(response.getResult().getOutput().getText());
     }
 
@@ -86,8 +90,9 @@ public class OpenAIServiceImpl implements OpenAIService {
     public String getAnswer(String question) {
         PromptTemplate promptTemplate = new PromptTemplate(question);
         Prompt prompt = promptTemplate.create();
-        ChatResponse response = chatModel.call(prompt);
+        ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
 
+        assert response != null;
         return response.getResult().getOutput().getText();
     }
 }
