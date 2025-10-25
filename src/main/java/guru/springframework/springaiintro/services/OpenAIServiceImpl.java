@@ -3,7 +3,9 @@ package guru.springframework.springaiintro.services;
 import guru.springframework.springaiintro.model.Answer;
 import guru.springframework.springaiintro.model.GetCapitalRequest;
 import guru.springframework.springaiintro.model.Question;
-import org.springframework.ai.chat.model.ChatModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -14,15 +16,17 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 /**
- * Created by jt, Spring Framework Guru.
+ * Modified by Pierrot on 25.10.2025.
  */
 @Service
 public class OpenAIServiceImpl implements OpenAIService {
 
-    private final ChatModel chatModel;
+    private static final Logger logger = LoggerFactory.getLogger(OpenAIServiceImpl.class);
 
-    public OpenAIServiceImpl(ChatModel chatModel) {
-        this.chatModel = chatModel;
+    private final ChatClient chatClient;
+
+    public OpenAIServiceImpl(ChatClient.Builder chatClientBuilder) {
+        this.chatClient = chatClientBuilder.build();
     }
 
     @Value("classpath:templates/get-capital-prompt.st")
@@ -35,37 +39,41 @@ public class OpenAIServiceImpl implements OpenAIService {
     public Answer getCapitalWithInfo(GetCapitalRequest getCapitalRequest) {
         PromptTemplate promptTemplate = new PromptTemplate(getCapitalPromptWithInfo);
         Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry()));
-        ChatResponse response = chatModel.call(prompt);
+        ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
 
-        return new Answer(response.getResult().getOutput().getContent());
+        assert response != null;
+        return new Answer(response.getResult().getOutput().getText());
     }
 
     @Override
     public Answer getCapital(GetCapitalRequest getCapitalRequest) {
         PromptTemplate promptTemplate = new PromptTemplate(getCapitalPrompt);
         Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry()));
-        ChatResponse response = chatModel.call(prompt);
+        ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
 
-        return new Answer(response.getResult().getOutput().getContent());
+        assert response != null;
+        return new Answer(response.getResult().getOutput().getText());
     }
 
     @Override
     public Answer getAnswer(Question question) {
-        System.out.println("I was called");
+        logger.info("I was called");
 
         PromptTemplate promptTemplate = new PromptTemplate(question.question());
         Prompt prompt = promptTemplate.create();
-        ChatResponse response = chatModel.call(prompt);
+        ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
 
-        return new Answer(response.getResult().getOutput().getContent());
+        assert response != null;
+        return new Answer(response.getResult().getOutput().getText());
     }
 
     @Override
     public String getAnswer(String question) {
         PromptTemplate promptTemplate = new PromptTemplate(question);
         Prompt prompt = promptTemplate.create();
-        ChatResponse response = chatModel.call(prompt);
+        ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
 
-        return response.getResult().getOutput().getContent();
+        assert response != null;
+        return response.getResult().getOutput().getText();
     }
 }
