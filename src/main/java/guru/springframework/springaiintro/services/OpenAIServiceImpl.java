@@ -12,10 +12,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-import java.util.Objects;
 
 /**
- * Modified by Pierrot on 15.02.2025.
+ * Modified by Pierrot on 25.10.2025.
  */
 @Service
 public class OpenAIServiceImpl implements OpenAIService {
@@ -35,7 +34,8 @@ public class OpenAIServiceImpl implements OpenAIService {
         Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry()));
         ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
 
-        return new Answer(Objects.requireNonNull(response).getResult().getOutput().getContent());
+        assert response != null;
+        return new Answer(response.getResult().getOutput().getText());
     }
 
     @Override
@@ -44,7 +44,8 @@ public class OpenAIServiceImpl implements OpenAIService {
         Prompt prompt = promptTemplate.create();
         ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
 
-        return new Answer(Objects.requireNonNull(response).getResult().getOutput().getContent());
+        assert response != null;
+        return new Answer(response.getResult().getOutput().getText());
     }
 
     @Override
@@ -54,6 +55,6 @@ public class OpenAIServiceImpl implements OpenAIService {
         ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
 
         assert response != null;
-        return response.getResult().getOutput().getContent();
+        return response.getResult().getOutput().getText();
     }
 }
