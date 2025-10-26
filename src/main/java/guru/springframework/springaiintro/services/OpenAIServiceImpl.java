@@ -9,12 +9,13 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
 /**
- * Modified by Pierrot on 25.10.2025.
+ * Modified by Pierrot on 26.10.2025.
  */
 @Service
 public class OpenAIServiceImpl implements OpenAIService {
@@ -29,23 +30,23 @@ public class OpenAIServiceImpl implements OpenAIService {
     }
 
     @Override
-    public Answer getCapital(GetCapitalRequest getCapitalRequest) {
+    public ResponseEntity<Answer> getCapital(GetCapitalRequest getCapitalRequest) {
         PromptTemplate promptTemplate = new PromptTemplate(getCapitalPromptResource);
         Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry()));
-        ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
 
-        assert response != null;
-        return new Answer(response.getResult().getOutput().getText());
+        Answer entity = chatClient.prompt(prompt).call().entity(Answer.class);
+
+
+        return ResponseEntity.ok(entity);
     }
 
     @Override
     public Answer getAnswer(Question question) {
         PromptTemplate promptTemplate = new PromptTemplate(question.question());
         Prompt prompt = promptTemplate.create();
-        ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
 
-        assert response != null;
-        return new Answer(response.getResult().getOutput().getText());
+        return chatClient.prompt(prompt).call().entity(Answer.class);
+
     }
 
     @Override
