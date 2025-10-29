@@ -42,20 +42,29 @@ public class OpenAIServiceImpl implements OpenAIService {
 
     @Override
     public GetCapitalWithInfoResponse getCapitalWithInfo(GetCapitalRequest getCapitalRequest) {
+        // write a BeanOutputConverter for GetCapitalWithInfoResponse
+        BeanOutputConverter<GetCapitalWithInfoResponse> converter = new BeanOutputConverter<>(GetCapitalWithInfoResponse.class);
+        String format = converter.getFormat();
+        extracted(format);
+
+        // create a PromptTemplate from getCapitalPromptWithInfo
         PromptTemplate promptTemplate = new PromptTemplate(getCapitalPromptWithInfo);
         Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry()));
 
-        return chatClient.prompt(prompt).call().entity(GetCapitalWithInfoResponse.class);
+        // call the chatClient with the prompt and get the ChatResponse
+        ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
 
-
+        assert response != null;
+        return converter.convert(Objects.requireNonNull(response.getResult().getOutput().getText()));
     }
+
 
     @Override
     public GetCapitalResponse getCapital(GetCapitalRequest getCapitalRequest) {
         BeanOutputConverter<GetCapitalResponse> converter = new BeanOutputConverter<>(GetCapitalResponse.class);
         String format = converter.getFormat();
 
-        log.info("#### The converter format: {} ####", format);
+        extracted(format);
 
         PromptTemplate promptTemplate = new PromptTemplate(getCapitalPrompt);
         Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry(),
@@ -88,4 +97,7 @@ public class OpenAIServiceImpl implements OpenAIService {
         assert response != null;
         return response.getResult().getOutput().getText();
     }
-}
+
+    private static void extracted(String format) {
+        log.info("#### The converter format: {} ####", format);
+    }}
