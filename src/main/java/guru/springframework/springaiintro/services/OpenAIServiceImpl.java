@@ -49,7 +49,8 @@ public class OpenAIServiceImpl implements OpenAIService {
 
         // create a PromptTemplate from getCapitalPromptWithInfo
         PromptTemplate promptTemplate = new PromptTemplate(getCapitalPromptWithInfo);
-        Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry()));
+        Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry(),
+                "format", format));
 
         // call the chatClient with the prompt and get the ChatResponse
         ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
@@ -99,5 +100,5 @@ public class OpenAIServiceImpl implements OpenAIService {
     }
 
     private static void extracted(String format) {
-        log.info("#### The converter format: {} ####", format);
+        log.info("#### The converter format: \n {} ####", format);
     }}
