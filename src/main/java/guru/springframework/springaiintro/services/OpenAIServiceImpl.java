@@ -3,6 +3,7 @@ package guru.springframework.springaiintro.services;
 import guru.springframework.springaiintro.model.Answer;
 import guru.springframework.springaiintro.model.GetCapitalRequest;
 import guru.springframework.springaiintro.model.GetCapitalResponse;
+import guru.springframework.springaiintro.model.GetCapitalWithInfoResponse;
 import guru.springframework.springaiintro.model.Question;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,13 +41,13 @@ public class OpenAIServiceImpl implements OpenAIService {
     private Resource getCapitalPromptWithInfo;
 
     @Override
-    public Answer getCapitalWithInfo(GetCapitalRequest getCapitalRequest) {
+    public GetCapitalWithInfoResponse getCapitalWithInfo(GetCapitalRequest getCapitalRequest) {
         PromptTemplate promptTemplate = new PromptTemplate(getCapitalPromptWithInfo);
         Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry()));
-        ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
 
-        assert response != null;
-        return new Answer(response.getResult().getOutput().getText());
+        return chatClient.prompt(prompt).call().entity(GetCapitalWithInfoResponse.class);
+
+
     }
 
     @Override
