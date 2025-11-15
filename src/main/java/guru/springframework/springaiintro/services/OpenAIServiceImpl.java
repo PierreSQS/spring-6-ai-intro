@@ -48,7 +48,7 @@ public class OpenAIServiceImpl implements OpenAIService {
         extracted(format);
 
         // create a PromptTemplate from getCapitalPromptWithInfo
-        PromptTemplate promptTemplate = new PromptTemplate(getCapitalPromptWithInfo);
+        PromptTemplate promptTemplate = new PromptTemplate(getCapitalPrompt);
         Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry(),
                 "format", format));
 
