@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Modified by Pierrot on 29-10-2025.
+ * Modified by Pierrot on 16-11-2025.
  */
 @Service
 public class OpenAIServiceImpl implements OpenAIService {
@@ -37,26 +37,20 @@ public class OpenAIServiceImpl implements OpenAIService {
     @Value("classpath:templates/get-capital-prompt.st")
     private Resource getCapitalPrompt;
 
-    @Value("classpath:templates/get-capital-with-info.st")
-    private Resource getCapitalPromptWithInfo;
+    @Value("classpath:templates/get-capital-with-Entity.st")
+    private Resource getCapitalPromptWithEntity;
 
     @Override
     public GetCapitalWithInfoResponse getCapitalWithInfo(GetCapitalRequest getCapitalRequest) {
-        // write a BeanOutputConverter for GetCapitalWithInfoResponse
-        BeanOutputConverter<GetCapitalWithInfoResponse> converter = new BeanOutputConverter<>(GetCapitalWithInfoResponse.class);
-        String format = converter.getFormat();
-        extracted(format);
-
         // create a PromptTemplate from getCapitalPromptWithInfo
-        PromptTemplate promptTemplate = new PromptTemplate(getCapitalPrompt);
-        Prompt prompt = promptTemplate.create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry(),
-                "format", format));
+        PromptTemplate promptTemplate = new PromptTemplate(getCapitalPromptWithEntity);
+        Prompt prompt = promptTemplate
+                .create(Map.of("stateOrCountry", getCapitalRequest.stateOrCountry()));
 
-        // call the chatClient with the prompt and get the ChatResponse
-        ChatResponse response = chatClient.prompt(prompt).call().chatResponse();
-
-        assert response != null;
-        return converter.convert(Objects.requireNonNull(response.getResult().getOutput().getText()));
+        // return the Response
+        return chatClient.prompt(prompt)
+                .call()
+                .entity(GetCapitalWithInfoResponse.class);
     }
 
 
